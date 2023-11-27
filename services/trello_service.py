@@ -1,4 +1,5 @@
 from services.http_handler_service import HTTPHandlerService
+from fastapi import HTTPException
 
 class TrelloService():
     instance=None
@@ -98,15 +99,18 @@ class TrelloService():
         }"""
         response = HTTPHandlerService.request('POST',f"{self.base_url}/cards",headers=self.headers, params={**self.base_params, **card})
         data = response.json()
-        data_dict = {
-                        "id": data["id"],
-                        "title": data["name"],
-                        "description": data["desc"],
-                        "url": data["url"],
-                        "shortUrl": data["shortUrl"],
-                        "idMembers": data["idMembers"],
-                        "idLabels": data["idLabels"]
-                    }
+        try:
+            data_dict = {
+                            "id": data["id"],
+                            "title": data["name"],
+                            "description": data["desc"],
+                            "url": data["url"],
+                            "shortUrl": data["shortUrl"],
+                            "idMembers": data["idMembers"],
+                            "idLabels": data["idLabels"]
+                        }
+        except KeyError:
+            raise HTTPException("The task was created but the response from Trello is not valid")
         return data_dict
 
 
