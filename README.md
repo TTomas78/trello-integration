@@ -90,6 +90,17 @@ curl --location 'http://localhost:8000/' \
  "description":"this is a bug"}'
 ```
 
+## Testing
+
+As a demonstration purpose, I created a method that performs testing using the pytest library.
+
+It can be run using 
+
+```bash
+pytest
+```
+
+
 ## Atention
 
 Is mandatory to have at least one list on trello named "ToDo" in the targeted board, otherwise it will throw an exception.
