@@ -49,7 +49,7 @@ TRELLO_LIST_NAME=ToDo
 
 Here's a secuence diagram about how the different clases on the app interects to acchieve the green path of one of the use cases:
 
-[insert image here]
+![README](https://github.com/TTomas78/trello-integration/assets/17711544/6bd78b8e-dd15-4fb3-80bd-ebca8b5649d4)
 
 Theres three entities that this application handles properly:
 
@@ -61,7 +61,8 @@ Theres three entities that this application handles properly:
 
 All entities are created trhough the same endpoint (the root endpoint)
 
-[insert image of the payloads]
+![requests](https://github.com/TTomas78/trello-integration/assets/17711544/6826aafa-d4a0-47c7-9889-c67adab112b5)
+
 
 ## Atention
 
