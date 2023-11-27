@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response, status
 from dotenv import load_dotenv
 from pydantic import ValidationError
 import os
@@ -11,7 +11,9 @@ from services.job_service import TaskService, IssueService, BugService
 
 app = FastAPI()
 
-load_dotenv()
+env = load_dotenv()
+if not env:
+    raise Exception("Cannot load the .env file")
 
 
 api_key = os.environ.get("TRELLO_API_KEY")
@@ -22,7 +24,7 @@ list_name = os.environ.get("TRELLO_LIST_NAME")
 trello_service = TrelloService.get_or_create(api_key=api_key, token=token, trello_board_id=trello_board_id, list_name=list_name)
 
 @app.post("/")
-def read_root(payload: dict):
+def read_root(payload: dict, response:Response):
         job_selector = {
             JobTypeEnum.task: (TaskSchema,TaskService),
             JobTypeEnum.issue: (IssueSchema,IssueService),
@@ -34,7 +36,9 @@ def read_root(payload: dict):
             raise HTTPException(400, "Invalid job type, valid types are: task, issue, bug")
         try:
             job = class_validator(**payload)
+            response.status_code = status.HTTP_201_CREATED
             return service.create(job, trello_service)
+            
              
         except KeyError:
             raise  HTTPException(500,"There was an error on the server side")

@@ -4,7 +4,7 @@ import requests
 class HTTPHandlerService():
 
     @classmethod
-    def request(self, *args, **kwargs):    
+    def request(cls, *args, **kwargs):    
         response = requests.request(*args, **kwargs)
         if response.status_code == 400:
             raise HTTPException(status_code=500, detail="There was an error with the request to a third party API")

@@ -1,8 +1,5 @@
 from services.http_handler_service import HTTPHandlerService
 
-
-import requests
-
 class TrelloService():
     instance=None
 
@@ -10,6 +7,8 @@ class TrelloService():
         self.api_key = api_key
         self.token = token
         self.base_url = "https://api.trello.com/1"
+        self.headers = {'Accept': 'application/json'}
+        self.base_params={"key": self.api_key, "token": self.token}
         board_ids = self.get_boards()
 
         if trello_board_id in board_ids:
@@ -29,12 +28,12 @@ class TrelloService():
             cls.instance = TrelloService(api_key, token, trello_board_id, list_name)
         return cls.instance
 
-    def get_board_valid_members(self, board_id) -> list[dict]:
+    def get_board_valid_members(self) -> list[dict]:
         """
         Request the valid members of a board (not deactivated)
 
         """
-        response = HTTPHandlerService.request('GET',f"{self.base_url}/boards/{self.board_id}/memberships",headers={'Accept': 'application/json'}, params={"key": self.api_key, "token": self.token})
+        response = HTTPHandlerService.request('GET',f"{self.base_url}/boards/{self.board_id}/memberships",headers=self.headers, params=self.base_params)
         data = response.json()
         valid_members = [member.get('idMember') for member in data if not member.get("deactivated", False)]
         return valid_members
@@ -43,7 +42,7 @@ class TrelloService():
         """
         Request the valid boards for the user who provided the autentication
         """
-        response = HTTPHandlerService.request('GET',f"{self.base_url}/members/me",headers={'Accept': 'application/json'}, params={"key": self.api_key, "token": self.token})
+        response = HTTPHandlerService.request('GET',f"{self.base_url}/members/me",headers=self.headers, params=self.base_params)
         data = response.json()
         try:
             return data["idBoards"]
@@ -65,7 +64,7 @@ class TrelloService():
         """
         Get the board labels
         """
-        response = HTTPHandlerService.request('GET',f"{self.base_url}/boards/{self.board_id}/labels",headers={'Accept': 'application/json'}, params={"key": self.api_key, "token": self.token})
+        response = HTTPHandlerService.request('GET',f"{self.base_url}/boards/{self.board_id}/labels",headers=self.headers, params=self.base_params)
         data = response.json()
         return data
 
@@ -78,7 +77,7 @@ class TrelloService():
             "color": '' if color is None else color
         }
 
-        response = HTTPHandlerService.request('POST',f"{self.base_url}/boards/{self.board_id}/labels",headers={'Accept': 'application/json'}, params={"key": self.api_key, "token": self.token, **label_info})
+        response = HTTPHandlerService.request('POST',f"{self.base_url}/boards/{self.board_id}/labels",headers=self.headers, params={**self.base_params,**label_info})
         data = response.json()
         return data["id"]
 
@@ -93,13 +92,22 @@ class TrelloService():
         return self.create_label(name, color)
         
 
-    def create_card(self, card) -> dict:
+    def create_card(self, card:dict) -> dict:
         """
         Create a new card in the board
         }"""
-        response = HTTPHandlerService.request('POST',f"{self.base_url}/cards",headers={'Accept': 'application/json'}, params={"key": self.api_key, "token": self.token, **card})
+        response = HTTPHandlerService.request('POST',f"{self.base_url}/cards",headers=self.headers, params={**self.base_params, **card})
         data = response.json()
-        return data
+        data_dict = {
+                        "id": data["id"],
+                        "title": data["name"],
+                        "description": data["desc"],
+                        "url": data["url"],
+                        "shortUrl": data["shortUrl"],
+                        "idMembers": data["idMembers"],
+                        "idLabels": data["idLabels"]
+                    }
+        return data_dict
 
 
     def get_board_lists(self):
@@ -122,7 +130,7 @@ class TrelloService():
             }
         ]
         """
-        response = HTTPHandlerService.request('GET',f"{self.base_url}/boards/{self.board_id}/lists", headers={'Accept': 'application/json'}, params={"key": self.api_key, "token": self.token})
+        response = HTTPHandlerService.request('GET',f"{self.base_url}/boards/{self.board_id}/lists", headers=self.headers, params=self.base_params)
         data = response.json()
         return data
 

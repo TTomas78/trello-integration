@@ -14,6 +14,9 @@ class CategoryEnum(str, Enum):
 class JobSchema(pydantic.BaseModel):
     type: JobTypeEnum
 
+    class Config:
+        extra = "forbid"
+
 class IssueSchema(JobSchema):
     type: JobTypeEnum = JobTypeEnum.issue
     title: str

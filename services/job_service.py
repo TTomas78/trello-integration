@@ -45,7 +45,8 @@ class BugService(JobService):
             "name": id,
             "desc": bug.description,
             "idList": trello_service.list_id,
-            "idMembers": [random.choice(trello_service.get_board_valid_members(trello_service.board_id))],
+            "idMembers": [random.choice(trello_service.get_board_valid_members())],
             "idLabels": [trello_service.get_or_create_label(bug.category)]
         }
         return trello_service.create_card(bug_dict)
+ 
