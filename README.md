@@ -44,6 +44,11 @@ TRELLO_BOARD_ID=d8f6d8f6d8f6
 TRELLO_LIST_NAME=ToDo
 ```
 
+Finally, the application can be started with
+
+```bash
+uvicorn main:app --reload 
+```
 
 ## Documentation
 
